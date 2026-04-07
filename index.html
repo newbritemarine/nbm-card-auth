@@ -32,8 +32,14 @@
   .field input::placeholder,.field textarea::placeholder{color:rgba(143,170,195,0.4);}
   .field select option{background:var(--navy);}
   .field textarea{resize:vertical;min-height:80px;}
-  .card-types{display:flex;gap:10px;}
-  .card-type-btn{flex:1;padding:10px 8px;background:rgba(10,22,40,0.7);border:1px solid rgba(0,180,216,0.2);border-radius:2px;color:var(--gray);font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .autocomplete-wrapper{position:relative;}
+  .pac-container{background:var(--ocean)!important;border:1px solid rgba(0,180,216,0.3)!important;border-radius:2px!important;font-family:'Barlow',sans-serif!important;margin-top:2px!important;}
+  .pac-item{padding:8px 14px!important;color:var(--silver)!important;font-size:0.85rem!important;cursor:pointer!important;border-top:1px solid rgba(0,180,216,0.1)!important;}
+  .pac-item:hover{background:rgba(0,180,216,0.1)!important;}
+  .pac-item-query{color:var(--white)!important;font-size:0.85rem!important;}
+  .pac-matched{color:var(--aqua)!important;}
+  .card-types{display:flex;gap:10px;flex-wrap:wrap;}
+  .card-type-btn{flex:1;min-width:80px;padding:10px 8px;background:rgba(10,22,40,0.7);border:1px solid rgba(0,180,216,0.2);border-radius:2px;color:var(--gray);font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
   .card-type-btn:hover{border-color:var(--aqua);color:var(--aqua);}
   .card-type-btn.active{background:rgba(0,180,216,0.15);border-color:var(--aqua);color:var(--white);}
   .card-type-btn svg{width:22px;height:22px;}
@@ -64,7 +70,7 @@
   .success-overlay p{color:var(--gray);font-size:0.9rem;text-align:center;max-width:360px;line-height:1.7;}
   .btn-done{margin-top:8px;padding:12px 40px;background:var(--aqua);border:none;border-radius:2px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;cursor:pointer;}
   .footer{text-align:center;padding:18px 40px;border-top:1px solid rgba(0,180,216,0.1);font-size:0.68rem;color:rgba(143,170,195,0.5);letter-spacing:0.5px;}
-  @media(max-width:560px){.header{flex-wrap:wrap;padding:24px 20px;}.form-title{margin-left:0;text-align:left;}.body{padding:24px 20px;}.grid-2,.grid-3{grid-template-columns:1fr;}.card-types{flex-wrap:wrap;}}
+  @media(max-width:560px){.header{flex-wrap:wrap;padding:24px 20px;}.form-title{margin-left:0;text-align:left;}.body{padding:24px 20px;}.grid-2,.grid-3{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -78,82 +84,93 @@
   </div>
   <div class="body">
     <div class="notice"><strong>This form authorizes New Brite Marine to charge the card on file for agreed services.</strong> Card data is stored securely through our payment processor. This document is retained for authorization purposes only.</div>
-    <section>
-      <div class="section-label">Client Information</div>
-      <div class="grid grid-2" style="margin-bottom:16px">
-        <div class="field"><label>First Name</label><input type="text" id="firstName" placeholder="John" /></div>
-        <div class="field"><label>Last Name</label><input type="text" id="lastName" placeholder="Smith" /></div>
-      </div>
-      <div class="grid grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Phone Number</label><input type="tel" id="phone" placeholder="(305) 555-0100" /></div>
-        <div class="field"><label>Email Address</label><input type="email" id="email" placeholder="john@example.com" /></div>
-      </div>
-      <div class="grid" style="margin-bottom:16px">
-        <div class="field"><label>Vessel Name / Description</label><input type="text" id="vessel" placeholder="e.g. 28' Sea Ray – White Hull" /></div>
-      </div>
-      <div class="grid grid-2">
-        <div class="field"><label>Marina / Storage Location</label><input type="text" id="marina" placeholder="e.g. Dinner Key Marina, Slip 42" /></div>
-        <div class="field"><label>Service Date</label><input type="date" id="serviceDate" /></div>
-      </div>
-    </section>
-    <div class="divider"></div>
-    <section>
-      <div class="section-label">Card Information</div>
-      <div style="margin-bottom:16px">
-        <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);font-weight:600;display:block;margin-bottom:8px">Card Type</label>
-        <div class="card-types">
-          <button type="button" class="card-type-btn active" data-type="Visa" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><text x="5" y="17" font-family="sans-serif" font-size="12" font-weight="700" fill="#1a6ac4">VISA</text></svg>Visa</button>
-          <button type="button" class="card-type-btn" data-type="Mastercard" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><circle cx="14" cy="12" r="7" fill="#eb001b" opacity="0.8"/><circle cx="24" cy="12" r="7" fill="#f79e1b" opacity="0.8"/></svg>Mastercard</button>
-          <button type="button" class="card-type-btn" data-type="Amex" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><text x="4" y="17" font-family="sans-serif" font-size="9" font-weight="700" fill="#007bc1">AMEX</text></svg>Amex</button>
-          <button type="button" class="card-type-btn" data-type="Discover" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><circle cx="26" cy="12" r="7" fill="#f76f20" opacity="0.8"/><text x="4" y="15" font-family="sans-serif" font-size="7" font-weight="700" fill="#f0f0f0">DISC</text></svg>Discover</button>
-        </div>
-      </div>
-      <div class="grid grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Name on Card</label><input type="text" id="cardName" placeholder="As it appears on card" /></div>
-        <div class="field"><label>Last 4 Digits</label><input type="text" id="cardLast4" placeholder="1234" maxlength="4" pattern="[0-9]{4}" /></div>
-      </div>
-      <div class="grid grid-3" style="margin-bottom:16px">
-        <div class="field"><label>Expiration Month</label><select id="expMonth"><option value="">Month</option><option>01 – Jan</option><option>02 – Feb</option><option>03 – Mar</option><option>04 – Apr</option><option>05 – May</option><option>06 – Jun</option><option>07 – Jul</option><option>08 – Aug</option><option>09 – Sep</option><option>10 – Oct</option><option>11 – Nov</option><option>12 – Dec</option></select></div>
-        <div class="field"><label>Expiration Year</label><select id="expYear"><option value="">Year</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option><option>2032</option></select></div>
-        <div class="field"><label>Billing ZIP Code</label><input type="text" id="billingZip" placeholder="33101" maxlength="10" /></div>
-      </div>
-      <div class="field"><label>Billing Address (optional)</label><input type="text" id="billingAddr" placeholder="Street address for verification" /></div>
-    </section>
-    <div class="divider"></div>
-    <section>
-      <div class="section-label">Service Authorization</div>
-      <div class="grid grid-2" style="margin-bottom:16px">
-        <div class="field"><label>Service Package</label><select id="serviceType"><option value="">Select service</option><option>Basic Wash & Wax</option><option>Full Detail – Interior & Exterior</option><option>Gelcoat Restoration</option><option>Ceramic Coating</option><option>Bottom Paint / Hull Service</option><option>Custom Package</option></select></div>
-        <div class="field"><label>Authorized Amount ($)</label><input type="text" id="authAmount" placeholder="e.g. 450.00" /></div>
-      </div>
-      <div class="field"><label>Notes / Special Instructions</label><textarea id="notes" placeholder="Any special requests, access instructions, or service notes..."></textarea></div>
-    </section>
-    <div class="divider"></div>
-    <section>
-      <div class="section-label">Authorization & Signature</div>
-      <div class="auth-box">I, <strong id="authNameDisplay">the undersigned</strong>, hereby authorize <strong>New Brite Marine</strong> to charge the credit card identified above for marine detailing services as described. I confirm that I am the authorized cardholder and that all information provided is accurate. This authorization remains valid for the service date listed above and any follow-up charges directly related to agreed services. New Brite Marine reserves the right to adjust the final amount within <strong>10%</strong> of the authorized amount for supply or scope variations, with prior verbal or written notice.</div>
-      <div class="field" style="margin-bottom:14px"><label>Date of Authorization</label><input type="date" id="authDate" style="max-width:220px" /></div>
-      <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);font-weight:600;display:block;margin-bottom:8px">Client Signature</label>
-      <div class="sig-wrap">
-        <canvas id="sigCanvas"></canvas>
-        <button type="button" class="clear-sig" onclick="clearSig()">Clear</button>
-      </div>
-      <div class="sig-label">Sign above using mouse or touch</div>
-    </section>
-    <div class="error-banner" id="errorBanner">Submission failed. Please check your connection and try again. If the problem persists, contact New Brite Marine directly.</div>
-    <div class="actions">
-      <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
-      <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Authorization</button>
+
+```
+<section>
+  <div class="section-label">Client Information</div>
+  <div class="grid grid-2" style="margin-bottom:16px">
+    <div class="field"><label>First Name</label><input type="text" id="firstName" placeholder="John" /></div>
+    <div class="field"><label>Last Name</label><input type="text" id="lastName" placeholder="Smith" /></div>
+  </div>
+  <div class="grid grid-2" style="margin-bottom:16px">
+    <div class="field"><label>Phone Number</label><input type="tel" id="phone" placeholder="(305) 555-0100" /></div>
+    <div class="field"><label>Email Address</label><input type="email" id="email" placeholder="john@example.com" /></div>
+  </div>
+  <div class="grid" style="margin-bottom:16px">
+    <div class="field"><label>Vessel Name / Description</label><input type="text" id="vessel" placeholder="e.g. 28' Sea Ray – White Hull" /></div>
+  </div>
+  <div class="field">
+    <label>Marina / Storage Location</label>
+    <div class="autocomplete-wrapper">
+      <input type="text" id="marina" placeholder="Start typing marina or address..." autocomplete="off" />
     </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="section-label">Card Information</div>
+  <div style="margin-bottom:16px">
+    <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);font-weight:600;display:block;margin-bottom:8px">Card Type</label>
+    <div class="card-types">
+      <button type="button" class="card-type-btn active" data-type="Visa" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><text x="5" y="17" font-family="sans-serif" font-size="12" font-weight="700" fill="#1a6ac4">VISA</text></svg>Visa</button>
+      <button type="button" class="card-type-btn" data-type="Mastercard" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><circle cx="14" cy="12" r="7" fill="#eb001b" opacity="0.8"/><circle cx="24" cy="12" r="7" fill="#f79e1b" opacity="0.8"/></svg>Mastercard</button>
+      <button type="button" class="card-type-btn" data-type="Amex" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><text x="4" y="17" font-family="sans-serif" font-size="9" font-weight="700" fill="#007bc1">AMEX</text></svg>Amex</button>
+      <button type="button" class="card-type-btn" data-type="Discover" onclick="selectCard(this)"><svg viewBox="0 0 38 24" fill="none"><rect width="38" height="24" rx="3" fill="rgba(0,180,216,0.1)"/><circle cx="26" cy="12" r="7" fill="#f76f20" opacity="0.8"/><text x="4" y="15" font-family="sans-serif" font-size="7" font-weight="700" fill="#f0f0f0">DISC</text></svg>Discover</button>
+    </div>
+  </div>
+  <div class="grid grid-2" style="margin-bottom:16px">
+    <div class="field"><label>Name on Card</label><input type="text" id="cardName" placeholder="As it appears on card" /></div>
+    <div class="field"><label>Last 4 Digits</label><input type="text" id="cardLast4" placeholder="1234" maxlength="4" pattern="[0-9]{4}" /></div>
+  </div>
+  <div class="grid grid-3" style="margin-bottom:16px">
+    <div class="field"><label>Expiration Month</label><select id="expMonth"><option value="">Month</option><option>01 – Jan</option><option>02 – Feb</option><option>03 – Mar</option><option>04 – Apr</option><option>05 – May</option><option>06 – Jun</option><option>07 – Jul</option><option>08 – Aug</option><option>09 – Sep</option><option>10 – Oct</option><option>11 – Nov</option><option>12 – Dec</option></select></div>
+    <div class="field"><label>Expiration Year</label><select id="expYear"><option value="">Year</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option><option>2032</option></select></div>
+    <div class="field"><label>Billing ZIP Code</label><input type="text" id="billingZip" placeholder="33101" maxlength="10" /></div>
+  </div>
+  <div class="field"><label>Billing Address (optional)</label><input type="text" id="billingAddr" placeholder="Street address for verification" /></div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="section-label">Notes</div>
+  <div class="field"><label>Special Instructions (optional)</label><textarea id="notes" placeholder="Any special requests, access instructions, or service notes..."></textarea></div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="section-label">Authorization & Signature</div>
+  <div class="auth-box">I, <strong id="authNameDisplay">the undersigned</strong>, hereby authorize <strong>New Brite Marine</strong> to charge the credit card identified above for marine detailing services rendered. I confirm that I am the authorized cardholder and that all information provided is accurate. New Brite Marine reserves the right to adjust the final amount within <strong>10%</strong> of the quoted price for supply or scope variations, with prior verbal or written notice.</div>
+  <div class="field" style="margin-bottom:14px"><label>Date of Authorization</label><input type="date" id="authDate" style="max-width:220px" /></div>
+  <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);font-weight:600;display:block;margin-bottom:8px">Client Signature</label>
+  <div class="sig-wrap">
+    <canvas id="sigCanvas"></canvas>
+    <button type="button" class="clear-sig" onclick="clearSig()">Clear</button>
+  </div>
+  <div class="sig-label">Sign above using mouse or touch</div>
+</section>
+
+<div class="error-banner" id="errorBanner">Submission failed. Please check your connection and try again.</div>
+<div class="actions">
+  <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
+  <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()">Submit Authorization</button>
+</div>
+```
+
   </div>
   <div class="footer">New Brite Marine · Professional Boat Detailing · Miami to Florida Keys<br>This form is for authorization purposes only. Card data is processed securely and never stored in plain text.</div>
 </div>
+
 <div class="success-overlay" id="successOverlay">
   <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
   <h3>Authorization Received</h3>
   <p>Thank you. Your card authorization has been submitted to New Brite Marine. Our team will be in touch to confirm your service details.</p>
   <button class="btn-done" onclick="closeDone()">Done</button>
 </div>
+
 <script>
   const SCRIPT_URL="https://script.google.com/macros/s/AKfycbz4qHn3Q81pM_BNyOrC6XETny5AMTlb5BSSRBnmTn-4Dm24AiMAHaaSUDlr7J6aMrFHiQ/exec";
   let selectedCardType="Visa";
@@ -174,17 +191,25 @@
   canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;hasSig=true;const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();},{passive:false});
   canvas.addEventListener('touchend',()=>drawing=false);
   function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height);hasSig=false;}
+  function initAutocomplete(){
+    const input=document.getElementById('marina');
+    const autocomplete=new google.maps.places.Autocomplete(input,{types:['establishment','geocode'],componentRestrictions:{country:'us'}});
+    autocomplete.addListener('place_changed',()=>{const place=autocomplete.getPlace();if(place.formatted_address){input.value=place.name+', '+place.formatted_address;}});
+  }
   async function submitForm(){
-    const required=[{id:'firstName',label:'First Name'},{id:'lastName',label:'Last Name'},{id:'phone',label:'Phone Number'},{id:'email',label:'Email Address'},{id:'vessel',label:'Vessel Name'},{id:'cardName',label:'Name on Card'},{id:'cardLast4',label:'Last 4 Digits'},{id:'expMonth',label:'Expiration Month'},{id:'expYear',label:'Expiration Year'},{id:'billingZip',label:'Billing ZIP'},{id:'serviceType',label:'Service Package'},{id:'authAmount',label:'Authorized Amount'},{id:'authDate',label:'Authorization Date'}];
+    const required=[{id:'firstName',label:'First Name'},{id:'lastName',label:'Last Name'},{id:'phone',label:'Phone Number'},{id:'email',label:'Email Address'},{id:'vessel',label:'Vessel Name'},{id:'cardName',label:'Name on Card'},{id:'cardLast4',label:'Last 4 Digits'},{id:'expMonth',label:'Expiration Month'},{id:'expYear',label:'Expiration Year'},{id:'billingZip',label:'Billing ZIP'},{id:'authDate',label:'Authorization Date'}];
     for(const f of required){const el=document.getElementById(f.id);if(!el.value.trim()){el.style.borderColor='#f4a628';el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});el.addEventListener('input',()=>el.style.borderColor='',{once:true});alert('Please complete: '+f.label);return;}}
     if(!hasSig){canvas.style.borderColor='#f4a628';canvas.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>canvas.style.borderColor='',2000);alert('Please provide a signature to complete authorization.');return;}
     const btn=document.getElementById('submitBtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting...';document.getElementById('errorBanner').classList.remove('show');
-    const payload={firstName:document.getElementById('firstName').value.trim(),lastName:document.getElementById('lastName').value.trim(),phone:document.getElementById('phone').value.trim(),email:document.getElementById('email').value.trim(),vessel:document.getElementById('vessel').value.trim(),marina:document.getElementById('marina').value.trim(),serviceDate:document.getElementById('serviceDate').value,cardType:selectedCardType,cardName:document.getElementById('cardName').value.trim(),cardLast4:document.getElementById('cardLast4').value.trim(),expMonth:document.getElementById('expMonth').value,expYear:document.getElementById('expYear').value,billingZip:document.getElementById('billingZip').value.trim(),billingAddr:document.getElementById('billingAddr').value.trim(),serviceType:document.getElementById('serviceType').value,authAmount:document.getElementById('authAmount').value.trim(),notes:document.getElementById('notes').value.trim(),authDate:document.getElementById('authDate').value};
+    const payload={firstName:document.getElementById('firstName').value.trim(),lastName:document.getElementById('lastName').value.trim(),phone:document.getElementById('phone').value.trim(),email:document.getElementById('email').value.trim(),vessel:document.getElementById('vessel').value.trim(),marina:document.getElementById('marina').value.trim(),cardType:selectedCardType,cardName:document.getElementById('cardName').value.trim(),cardLast4:document.getElementById('cardLast4').value.trim(),expMonth:document.getElementById('expMonth').value,expYear:document.getElementById('expYear').value,billingZip:document.getElementById('billingZip').value.trim(),billingAddr:document.getElementById('billingAddr').value.trim(),notes:document.getElementById('notes').value.trim(),authDate:document.getElementById('authDate').value};
     try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('successOverlay').classList.add('show');}
     catch(err){document.getElementById('errorBanner').classList.add('show');btn.disabled=false;btn.innerHTML='Submit Authorization';}
   }
   function resetForm(){if(!confirm('Reset all fields?'))return;document.querySelectorAll('input,select,textarea').forEach(el=>el.value='');document.getElementById('authDate').value=today;clearSig();authDisp.textContent='the undersigned';selectedCardType='Visa';document.querySelectorAll('.card-type-btn').forEach((b,i)=>b.classList.toggle('active',i===0));const btn=document.getElementById('submitBtn');btn.disabled=false;btn.innerHTML='Submit Authorization';document.getElementById('errorBanner').classList.remove('show');}
   function closeDone(){document.getElementById('successOverlay').classList.remove('show');resetForm();}
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places&callback=initAutocomplete" async defer></script>
+
 </body>
 </html>
